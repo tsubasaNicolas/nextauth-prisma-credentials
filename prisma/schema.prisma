@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,10 +8,114 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  username  String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                Int       @id @default(autoincrement())
+  email             String    @unique
+  username          String    @unique
+  password          String
+  createdAt         DateTime? @default(now()) @db.Timestamp(0)
+  updatedAt         DateTime? @default(now()) @updatedAt @db.Timestamp(0)
+  isAdmin           Boolean?  @default(false)
+  isCompetitor      Boolean?  @default(false)
+  requestCompetitor Boolean?  @default(false)
+  swimmers          swimmers?
+}
+
+model swimmers {
+  id                      Int                       @id @default(autoincrement())
+  name                    String?                   @db.VarChar(255)
+  date_of_birth           DateTime?                 @db.Date
+  gender                  String?                   @db.VarChar(10)
+  image_url               String?                   @db.VarChar(255)
+  created_at              DateTime?                 @default(now()) @db.Timestamp(0)
+  competitor              Boolean?                  @default(false)
+  updatedAt               DateTime?                 @default(now()) @db.Timestamp(0)
+  userId                  Int                       @unique
+  participant_competition participant_competition[]
+  swim_times              swim_times[]
+  user                    User                      @relation(fields: [userId], references: [id])
+}
+
+model competitions {
+  id                      Int                       @id @default(autoincrement())
+  name                    String
+  event_id                Int?
+  distance_id             Int?
+  category_id             Int?
+  start_time              DateTime?                 @db.Timestamp(0)
+  end_time                DateTime?                 @db.Timestamp(0)
+  created_at              DateTime?                 @default(now()) @db.Timestamp(0)
+  updatedAt               DateTime?                 @default(now()) @db.Timestamp(0)
+  swimming_events         swimming_events?          @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "competitions_ibfk_1")
+  distances               distances?                @relation(fields: [distance_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "competitions_ibfk_2")
+  swim_categories         swim_categories?          @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "competitions_ibfk_3")
+  participant_competition participant_competition[]
+  swim_times              swim_times[]
+
+  @@index([category_id], map: "category_id")
+  @@index([distance_id], map: "distance_id")
+  @@index([event_id], map: "event_id")
+}
+
+model distances {
+  id              Int            @id @default(autoincrement())
+  distance_meters Int?
+  name            String?        @db.VarChar(255)
+  description     String?        @db.Text
+  image_url       String?        @db.VarChar(255)
+  created_at      DateTime?      @default(now()) @db.Timestamp(0)
+  updatedAt       DateTime?      @default(now()) @db.Timestamp(0)
+  competitions    competitions[]
+}
+
+model participant_competition {
+  id             Int          @id @default(autoincrement())
+  swimmer_id     Int
+  competition_id Int
+  competitions   competitions @relation(fields: [competition_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  swimmers       swimmers     @relation(fields: [swimmer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  swim_times     swim_times[]
+
+  @@index([competition_id], map: "competition_id")
+  @@index([swimmer_id], map: "swimmer_id")
+}
+
+model swim_categories {
+  id           Int            @id @default(autoincrement())
+  name         String?        @db.VarChar(255)
+  description  String?        @db.Text
+  image_url    String?        @db.VarChar(255)
+  created_at   DateTime?      @default(now()) @db.Timestamp(0)
+  updatedAt    DateTime?      @default(now()) @db.Timestamp(0)
+  competitions competitions[]
+  swim_times   swim_times[]
+}
+
+model swim_times {
+  id                        Int                      @id @default(autoincrement())
+  swimmer_id                Int
+  competition_id            Int
+  swim_category_id          Int
+  time_in_seconds           Float
+  participant_competitionId Int?
+  competitions              competitions             @relation(fields: [competition_id], references: [id])
+  participant_competition   participant_competition? @relation(fields: [participant_competitionId], references: [id])
+  swim_categories           swim_categories          @relation(fields: [swim_category_id], references: [id])
+  swimmers                  swimmers                 @relation(fields: [swimmer_id], references: [id])
+
+  @@index([competition_id], map: "competition_id")
+  @@index([swim_category_id], map: "swim_category_id")
+  @@index([participant_competitionId], map: "swim_times_participant_competitionId_fkey")
+  @@index([swimmer_id], map: "swimmer_id")
+}
+
+model swimming_events {
+  id           Int            @id @default(autoincrement())
+  name         String?        @db.VarChar(255)
+  location     String?        @db.VarChar(255)
+  start_date   DateTime?      @db.Timestamp(0)
+  end_date     DateTime?      @db.Timestamp(0)
+  image_url    String?        @db.VarChar(255)
+  created_at   DateTime?      @default(now()) @db.Timestamp(0)
+  updatedAt    DateTime?      @default(now()) @db.Timestamp(0)
+  competitions competitions[]
 }
