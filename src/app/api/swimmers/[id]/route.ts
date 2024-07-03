@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+import prisma from "@/libs/db";
 import { swimmers } from "@prisma/client";
 import { NextResponse, NextRequest } from "next/server";
 import * as yup from "yup";
