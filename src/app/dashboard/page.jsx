@@ -48,7 +48,7 @@ function DashboardPage() {
         throw new Error("Usuario no autenticado correctamente");
       }
 
-      const res = await fetch("/api/swimmer", {
+      const res = await fetch("/api/swimmers", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -88,7 +88,7 @@ function DashboardPage() {
   }
 
   return (
-    <section className="h-[calc(100vh-7rem)] flex flex-col justify-center items-center">
+    <section className="h-[calc(100vh-7rem)] flex flex-col justify-center items-center bg-neutral-950">
       <div>
         <h1 className="text-white text-5xl">Dashboard</h1>
         {user ? (
@@ -212,7 +212,7 @@ function DashboardPage() {
         date_of_birth: data.date_of_birth,
       });
 
-      const resSwimmer = await fetch("/api/swimmer", {
+      const resSwimmer = await fetch("/api/swimmers", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

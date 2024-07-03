@@ -1,7 +1,6 @@
-// LoginPage.jsx
 "use client";
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useUserStore from "@/userStore";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -14,7 +13,7 @@ function LoginPage() {
   } = useForm();
   const router = useRouter();
   const [error, setError] = useState(null);
-  const setUser = useUserStore((state) => state.setUser);
+  const { setUser } = useUserStore();
 
   const onSubmit = handleSubmit(async (data) => {
     try {

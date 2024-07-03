@@ -1,8 +1,15 @@
-import Navbar from "@/components/Navbar";
-import { Inter } from "next/font/google";
+// RootLayout.jsx
+"use client";
+import { Inter as FontInter } from "next/font/google"; // Importa la fuente Inter
+import { cn } from "@/lib/utils";
+import Navbar from "../components/Navbar";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+// Define la fuente Inter
+const fontInter = FontInter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
 
 export const metadata = {
   title: "Create Next App",
@@ -12,7 +19,21 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <head>
+        <style>
+          {`
+            :root {
+              ${fontInter.styles}
+            }
+          `}
+        </style>
+      </head>
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          fontInter.variable
+        )}
+      >
         <Navbar />
         {children}
       </body>
