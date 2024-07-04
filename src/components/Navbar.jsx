@@ -30,6 +30,9 @@ function Navbar() {
               <Link href="/swim_times">Tiempos</Link>
             </li>
             <li>
+              <Link href="/charts">Gráficos</Link>
+            </li>
+            <li>
               <Link href="/api/auth/signout">Logout</Link>
             </li>
           </>
