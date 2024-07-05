@@ -3,20 +3,14 @@ import { swimmers } from "@prisma/client";
 import { NextResponse, NextRequest } from "next/server";
 import * as yup from "yup";
 
-interface Segments {
-  params: {
-    id: string;
-  };
-}
-
-const getSwimmer = async (id: string): Promise<swimmers | null> => {
+const getSwimmer = async (id) => {
   const idNumber = parseInt(id, 10); // Convertir id a un número
   const swimmer = await prisma.swimmers.findFirst({ where: { id: idNumber } });
 
   return swimmer;
 };
 
-export async function GET(request: NextRequest, { params }: Segments) {
+export async function GET(request, { params }) {
   const swimmer = await getSwimmer(params.id);
 
   if (!swimmer) {
@@ -33,7 +27,7 @@ const putSwimmerSchema = yup.object({
   name: yup.string().nullable(),
 });
 
-export async function PUT(request: NextRequest, { params }: Segments) {
+export async function PUT(request, { params }) {
   const idNumber = parseInt(params.id, 10); // Convertir id a un número
 
   const swimmer = await getSwimmer(params.id);

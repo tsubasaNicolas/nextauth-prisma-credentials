@@ -24,6 +24,7 @@ const timesSchema = yup.object({
   competition_id: yup.number().required(),
   swim_category_id: yup.number().required(), // Agrega la validación para swim_category_id
   time_in_seconds: yup.number().required(), // Agrega la validación para time_in_seconds
+  date_of_register: yup.date().required(),
 });
 
 export async function POST(request) {
@@ -35,6 +36,7 @@ export async function POST(request) {
     const competition_id = parseInt(data.get("competition_id"), 10); // Convertir a número base 10
     const swim_category_id = parseInt(data.get("swim_category_id"), 10); // Convertir a número base 10
     const time_in_seconds = parseFloat(data.get("time_in_seconds")); // Convertir a número de punto flotante
+    const date_of_register = new Date(data.get("date_of_register")); // Convertir la fecha de registro a objeto Date
 
     // Validar con Yup
     const {
@@ -42,20 +44,23 @@ export async function POST(request) {
       competition_id: validatedCompetitionId,
       swim_category_id: validatedSwimCategoryId,
       time_in_seconds: validatedTimeInSeconds,
+      date_of_register: validatedDateOfRegister,
     } = await timesSchema.validate({
       swimmer_id,
       competition_id,
       swim_category_id,
       time_in_seconds,
+      date_of_register,
     });
 
-    // Crear el registro en Prisma
+    // Crear el registro en Prisma incluyendo la fecha y hora actual
     const newTime = await prisma.swim_times.create({
       data: {
         swimmer_id: validatedSwimmerId,
         competition_id: validatedCompetitionId,
         swim_category_id: validatedSwimCategoryId,
         time_in_seconds: validatedTimeInSeconds,
+        date_of_register: validatedDateOfRegister, // Campo date_of_register en la tabla swim_times
       },
     });
 

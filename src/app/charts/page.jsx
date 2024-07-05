@@ -1,18 +1,61 @@
 "use client";
-import { useEffect } from "react";
-import {
-  createChart,
-  IChartApi,
-  ChartOptions,
-  ColorType,
-  CandlestickData,
-  TimeScaleOptions,
-  Time,
-  LocalizationOptions,
-} from "lightweight-charts";
+import { useEffect, useState } from "react";
+import { createChart } from "lightweight-charts";
+import LineChart from "./LineChart";
+import AreaChart from "./AreaChart";
+import useUserStore from "@/userStore";
+import { getSession } from "next-auth/react";
 
-export default function ChartsPage() {
+const ChartsPage = () => {
+  const userId = useUserStore((state) => state.userId);
+  const [swimmerId, setSwimmerId] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const session = await getSession();
+        if (!session) {
+          throw new Error("No hay sesión de usuario");
+        }
+
+        const response = await fetch(`/api/swimmers?userId=${userId}`);
+        if (!response.ok) {
+          throw new Error("Error al obtener los datos del nadador");
+        }
+        const data = await response.json();
+
+        if (data.length > 0) {
+          const foundSwimmer = data.find(
+            (swimmer) => swimmer.userId === userId
+          );
+          if (foundSwimmer) {
+            setSwimmerId(foundSwimmer.id);
+          } else {
+            throw new Error(
+              "No se encontró nadador para el userId proporcionado"
+            );
+          }
+        } else {
+          throw new Error(
+            "No se encontró ningún nadador para el userId proporcionado"
+          );
+        }
+      } catch (error) {
+        console.error("Error al obtener el swimmerId:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (userId) {
+      fetchData();
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (!swimmerId) return;
+
     const chartOptions = {
       layout: {
         textColor: "black",
@@ -21,102 +64,53 @@ export default function ChartsPage() {
     };
 
     const chart = createChart(
-      document.getElementById("container"),
+      document.getElementById("histogramContainer"),
       chartOptions
     );
-    const areaSeries = chart.addAreaSeries({
-      lineColor: "#2962FF",
-      topColor: "#2962FF",
-      bottomColor: "rgba(41, 98, 255, 0.28)",
-    });
 
-    areaSeries.setData([
-      { time: "2018-12-22", value: 32.51 },
-      { time: "2018-12-23", value: 31.11 },
-      { time: "2018-12-24", value: 27.02 },
-      { time: "2018-12-25", value: 27.32 },
-      { time: "2018-12-26", value: 25.17 },
-      { time: "2018-12-27", value: 28.89 },
-      { time: "2018-12-28", value: 25.46 },
-      { time: "2018-12-29", value: 23.92 },
-      { time: "2018-12-30", value: 22.68 },
-      { time: "2018-12-31", value: 22.67 },
-    ]);
+    const histogramSeries = chart.addHistogramSeries({ color: "#26a69a" });
 
-    const candlestickSeries = chart.addCandlestickSeries({
-      upColor: "#26a69a",
-      downColor: "#ef5350",
-      borderVisible: false,
-      wickUpColor: "#26a69a",
-      wickDownColor: "#ef5350",
-    });
+    // Datos de ejemplo para el histograma
+    const data = [
+      { value: 1, time: 1642425322000 },
+      { value: 8, time: 1642511722000 },
+      { value: 10, time: 1642598122000 },
+      { value: 20, time: 1642684522000 },
+      { value: 3, time: 1642770922000, color: "red" },
+      { value: 43, time: 1642857322000 },
+      { value: 41, time: 1642943722000, color: "red" },
+      { value: 43, time: 1643030122000 },
+      { value: 56, time: 1643116522000 },
+      { value: 46, time: 1643202922000, color: "red" },
+    ];
 
-    candlestickSeries.setData([
-      {
-        time: "2018-12-22",
-        open: 75.16,
-        high: 82.84,
-        low: 36.16,
-        close: 45.72,
-      },
-      { time: "2018-12-23", open: 45.12, high: 53.9, low: 45.12, close: 48.09 },
-      {
-        time: "2018-12-24",
-        open: 60.71,
-        high: 60.71,
-        low: 53.39,
-        close: 59.29,
-      },
-      { time: "2018-12-25", open: 68.26, high: 68.26, low: 59.04, close: 60.5 },
-      {
-        time: "2018-12-26",
-        open: 67.71,
-        high: 105.85,
-        low: 66.67,
-        close: 91.04,
-      },
-      { time: "2018-12-27", open: 91.04, high: 121.4, low: 82.7, close: 111.4 },
-      {
-        time: "2018-12-28",
-        open: 111.51,
-        high: 142.83,
-        low: 103.34,
-        close: 131.25,
-      },
-      {
-        time: "2018-12-29",
-        open: 131.33,
-        high: 151.17,
-        low: 77.68,
-        close: 96.43,
-      },
-      {
-        time: "2018-12-30",
-        open: 106.33,
-        high: 110.2,
-        low: 90.39,
-        close: 98.1,
-      },
-      {
-        time: "2018-12-31",
-        open: 109.87,
-        high: 114.69,
-        low: 85.66,
-        close: 111.26,
-      },
-    ]);
+    histogramSeries.setData(data);
 
     chart.timeScale().fitContent();
-  }, []);
+  }, [swimmerId]);
+
+  // Mostrar mensaje de carga mientras se obtiene el swimmerId
+  if (loading) {
+    return <p>Cargando...</p>;
+  }
+
+  // Mostrar mensaje si no se encontró swimmerId para el userId actual
+  if (!swimmerId) {
+    return <p>No se encontró nadador para el usuario actual</p>;
+  }
 
   return (
     <div>
       <h1>Charts</h1>
       <div
-        id="container"
+        id="histogramContainer"
         className="container"
         style={{ height: "400px" }}
       ></div>
+      <LineChart swimmerId={swimmerId} />
+      <AreaChart />
     </div>
   );
-}
+};
+
+export default ChartsPage;

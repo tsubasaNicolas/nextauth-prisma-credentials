@@ -1,5 +1,5 @@
+import useUserStore from "../userStore.js";
 import Link from "next/link";
-import useUserStore from "@/userStore";
 
 function Navbar() {
   const user = useUserStore((state) => state.user);

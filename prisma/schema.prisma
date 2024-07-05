@@ -96,6 +96,7 @@ model swim_times {
   competition_id            Int
   swim_category_id          Int
   time_in_seconds           Float
+  date_of_register          DateTime                 @db.Timestamp(0)
   participant_competitionId Int?
   competitions              competitions             @relation(fields: [competition_id], references: [id])
   participant_competition   participant_competition? @relation(fields: [participant_competitionId], references: [id])

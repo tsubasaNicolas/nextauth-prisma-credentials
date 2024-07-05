@@ -1,9 +1,10 @@
 // RootLayout.jsx
 "use client";
 import { Inter as FontInter } from "next/font/google"; // Importa la fuente Inter
-import { cn } from "@/lib/utils";
+
 import Navbar from "../components/Navbar";
 import "./globals.css";
+import { cn } from "../lib/utils.js";
 
 // Define la fuente Inter
 const fontInter = FontInter({
