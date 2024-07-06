@@ -24,7 +24,6 @@ const LineChart = ({ swimmerId }) => {
         // Ordenar los datos por tiempo ascendente
         data.sort((a, b) => a.time - b.time);
 
-        // Formatear los tiempos y valores
         const formattedTimes = data.map((time) => ({
           value: time.value, // Asegúrate de que value esté definido y sea válido
           time: time.time * 1000, // Convertir segundos a milisegundos
@@ -34,16 +33,25 @@ const LineChart = ({ swimmerId }) => {
         setLoading(false);
       } catch (error) {
         console.error("Error al obtener los tiempos de natación:", error);
+        setLoading(false); // Asegúrate de cambiar el estado de carga en caso de error
       }
     };
 
     if (swimmerId) {
       fetchSwimTimes();
+    } else {
+      setLoading(false); // Asegúrate de cambiar el estado de carga si no hay swimmerId
     }
   }, [swimmerId]);
 
   useEffect(() => {
     if (swimTimes.length === 0) return;
+
+    // Verificar antes de establecer los datos
+    if (swimTimes.some((data) => isNaN(data.time) || isNaN(data.value))) {
+      console.error("Datos de tiempo inválidos:", swimTimes);
+      return;
+    }
 
     const chartOptions = {
       layout: {
@@ -58,13 +66,6 @@ const LineChart = ({ swimmerId }) => {
     );
 
     const lineSeries = chart.addLineSeries({ color: "#2962FF" });
-
-    // Verificar antes de establecer los datos
-    if (swimTimes.some((data) => isNaN(data.time) || isNaN(data.value))) {
-      console.error("Datos de tiempo inválidos:", swimTimes);
-      return;
-    }
-
     lineSeries.setData(swimTimes);
 
     // Configurar el eje de tiempo
@@ -76,7 +77,7 @@ const LineChart = ({ swimmerId }) => {
       timeVisible: true,
       secondsVisible: false,
       tickMarkFormatter: (time) => {
-        // Usar day.js para formatear las fechas
+        // Usar day.js para formatear las fechas si es necesario
         return dayjs(time).format("DD/MM/YYYY");
       },
     });
@@ -86,6 +87,9 @@ const LineChart = ({ swimmerId }) => {
     return <p>Cargando tiempos de natación...</p>;
   }
 
+  if (!swimmerId) {
+    return <p>No se encontró nadador para el usuario actual</p>;
+  }
   return (
     <div
       id={`lineChartContainer_${swimmerId}`}
