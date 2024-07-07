@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { getSession } from "next-auth/react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -33,7 +33,10 @@ export default function SwimTimesPage() {
   // Obtener datos usando SWR
   const { data: swimmersData } = useSWR("/api/swimmers", fetcher);
   const { data: competitionsData } = useSWR("/api/competitions", fetcher);
-  const { data: categoriesData } = useSWR("/api/categories", fetcher);
+  const { data: categoriesData, mutate: mutateCategories } = useSWR(
+    "/api/categories",
+    fetcher
+  );
   const { data: swimTimesData, mutate: mutateSwimTimes } = useSWR(
     "/api/swim_times",
     fetcher
