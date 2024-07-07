@@ -85,31 +85,6 @@ export default function SwimTimesPage() {
   }, [swimmersData, competitionsData, categoriesData, setValue, user]);
 
   // Manejar envío del formulario
-  /*   const onSubmit = handleSubmit(async (data) => {
-    const formData = new FormData();
-    formData.append("time_in_seconds", data.time_in_seconds);
-    formData.append("swimmer_id", data.swimmer_id);
-    formData.append("competition_id", data.competition_id);
-    formData.append("swim_category_id", data.swim_category_id);
-    formData.append("date_of_register", selectedDate.toISOString());
-
-    try {
-      const res = await fetch("/api/swim_times", {
-        method: "POST",
-        body: formData,
-      });
-      if (res.ok) {
-        alert("Tiempos guardados exitosamente");
-        mutateSwimTimes(); // Actualizar los tiempos de natación después de crear uno nuevo
-        reset(); // Limpiar el formulario
-      } else {
-        alert("Error al crear el tiempo");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  }); */
-
   const onSubmit = handleSubmit(async (data) => {
     const formData = new FormData();
     formData.append("time_in_seconds", data.time_in_seconds);
