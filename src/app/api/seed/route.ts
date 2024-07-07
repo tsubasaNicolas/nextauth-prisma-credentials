@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     await prisma.user.deleteMany();
 
     // Crear usuarios
-    const user1 = await prisma.user.create({
+    /*     const user1 = await prisma.user.create({
       data: {
         email: "user1@example.com",
         username: "user1",
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
         image_url:
           "https://res.cloudinary.com/cursos-udemy-nico/image/upload/v1711136151/oqulfyhlguxszbhxdnok.png",
       },
-    });
+    }); */
 
     // Crear eventos de natación
     const event1 = await prisma.swimming_events.create({

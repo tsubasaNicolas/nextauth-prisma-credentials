@@ -30,6 +30,7 @@ export default function SwimTimesPage() {
     reset,
   } = useForm();
 
+  // Obtener datos usando SWR
   const { data: swimmersData } = useSWR("/api/swimmers", fetcher);
   const { data: competitionsData } = useSWR("/api/competitions", fetcher);
   const { data: categoriesData } = useSWR("/api/categories", fetcher);
@@ -40,6 +41,7 @@ export default function SwimTimesPage() {
 
   const [selectedDate, setSelectedDate] = useState(new Date());
 
+  // Cargar el usuario actual
   useEffect(() => {
     const loadUser = async () => {
       const session = await getSession();
@@ -60,6 +62,7 @@ export default function SwimTimesPage() {
     loadUser();
   }, [setUser]);
 
+  // Establecer valores iniciales en el formulario
   useEffect(() => {
     if (swimmersData && user) {
       const swimmer = swimmersData.find(
@@ -78,6 +81,7 @@ export default function SwimTimesPage() {
     }
   }, [swimmersData, competitionsData, categoriesData, setValue, user]);
 
+  // Manejar envío del formulario
   const onSubmit = handleSubmit(async (data) => {
     const formData = new FormData();
     formData.append("time_in_seconds", data.time_in_seconds);
@@ -93,7 +97,7 @@ export default function SwimTimesPage() {
       });
       if (res.ok) {
         alert("Tiempos guardados exitosamente");
-        await mutateSwimTimes(null, true); // Forzar una nueva solicitud para obtener los datos actualizados
+        mutateSwimTimes(); // Actualizar los tiempos de natación después de crear uno nuevo
         reset(); // Limpiar el formulario
       } else {
         alert("Error al crear el tiempo");
@@ -103,17 +107,12 @@ export default function SwimTimesPage() {
     }
   });
 
-  // Filtrar los tiempos de natación del usuario logueado
-  const userSwimTimes = swimTimesData?.filter(
-    (swimTime) => swimTime.swimmer_id === defaultSwimmer?.id
-  );
-
   return (
     <div>
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h1 className="text-3xl font-semibold mb-8">Swim Times</h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {userSwimTimes?.map((swimTime) => (
+          {swimTimesData?.map((swimTime) => (
             <Card key={swimTime.id}>
               <CardHeader>
                 <CardTitle>
@@ -155,7 +154,8 @@ export default function SwimTimesPage() {
         </div>
 
         <div className="w-full m-6">
-          {defaultSwimmer && <LineChart swimmerId={defaultSwimmer.id} />}
+          {defaultSwimmer && <LineChart swimmerId={defaultSwimmer.id} />}{" "}
+          {/* Usar el ID del nadador por defecto */}
         </div>
 
         <form onSubmit={onSubmit} className="w-full md:w-1/2 mt-10">
