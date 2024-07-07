@@ -5,12 +5,12 @@ export async function GET(request: NextRequest) {
   try {
     // Eliminar todos los datos existentes para evitar conflictos
     // await prisma.swim_times.deleteMany();
-    await prisma.competitions.deleteMany();
+    //  await prisma.competitions.deleteMany();
     await prisma.participant_competition.deleteMany();
     //await prisma.swimmers.deleteMany();
-    await prisma.swimming_events.deleteMany();
-    await prisma.distances.deleteMany();
-    await prisma.swim_categories.deleteMany();
+    // await prisma.swimming_events.deleteMany();
+    // await prisma.distances.deleteMany();
+    //  await prisma.swim_categories.deleteMany();
     // await prisma.user.deleteMany();
 
     // Crear usuarios
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     }); */
 
     // Crear eventos de natación
-    const event1 = await prisma.swimming_events.create({
+    /*  const event1 = await prisma.swimming_events.create({
       data: {
         name: "Swimming Event 1",
         location: "Location 1",
@@ -139,7 +139,7 @@ export async function GET(request: NextRequest) {
         end_time: new Date(),
       },
     });
-
+ */
     // Crear tiempos de natación
     /*     await prisma.swim_times.createMany({
       data: [
