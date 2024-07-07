@@ -4,14 +4,14 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   try {
     // Eliminar todos los datos existentes para evitar conflictos
-    await prisma.swim_times.deleteMany();
+    // await prisma.swim_times.deleteMany();
     await prisma.competitions.deleteMany();
     await prisma.participant_competition.deleteMany();
-    await prisma.swimmers.deleteMany();
+    //await prisma.swimmers.deleteMany();
     await prisma.swimming_events.deleteMany();
     await prisma.distances.deleteMany();
     await prisma.swim_categories.deleteMany();
-    await prisma.user.deleteMany();
+    // await prisma.user.deleteMany();
 
     // Crear usuarios
     /*     const user1 = await prisma.user.create({
